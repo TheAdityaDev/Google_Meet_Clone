@@ -18,13 +18,18 @@ app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
-const allowedOrigin = 'http://localhost:5173';
+const allowedOrigin = process.env.CORS_ORIGIN;
+
+// set limit to request to apis
+
+
 app.use(cors({
     origin : allowedOrigin, 
     credentials : true
 }))
 app.use(cookieParser());
 app.use(express.json());
+
 
 // Routes
 app.use("/api/auth", authRoute);
