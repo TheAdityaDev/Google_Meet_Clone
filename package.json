@@ -1,0 +1,29 @@
+{
+  "name": "google_meet_clone",
+  "version": "1.0.0",
+  "description": "Google Meet Clone - A real-time video conferencing app.",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",    
+    "build": "react-scripts build",    
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheAdityaDev/Google_meet_clone.git"
+  },
+  "keywords": ["google meet", "clone", "video conference", "react"],
+  "author": "Your Name",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TheAdityaDev/Google_meet_clone/issues"
+  },
+  "homepage": "https://github.com/TheAdityaDev/Google_meet_clone#readme",
+  "dependencies": {
+    "gh-pages": "^3.2.3",  
+    "react": "^17.0.2",     
+    "react-dom": "^17.0.2", 
+    "react-scripts": "^4.0.3" 
+  }
+}
