@@ -101,7 +101,6 @@ export async function sendFriendRequest(req, res) {
   }
 }
 
-
 // accept request
 export async function acceptFriendRequest(req, res) {
   try {
@@ -196,7 +195,6 @@ export async function rejectFriendRequest(req, res) {
   }
 }
 
-
 export async function getFriendRequest(req, res) {
   try {
     // Incoming pending requests to the current user
@@ -205,7 +203,10 @@ export async function getFriendRequest(req, res) {
         recipient: req.user.id,
         status: "pending",
       })
-      .populate("sender", "fullname profilePic nativeLanguage learningLanguage");
+      .populate(
+        "sender",
+        "fullname profilePic nativeLanguage learningLanguage"
+      );
 
     // Friend requests sent by the current user that were accepted
     const acceptRequest = await friendRequestModel
@@ -224,7 +225,6 @@ export async function getFriendRequest(req, res) {
     });
   }
 }
-
 
 export async function getOutGoningFriendRequest(req, res) {
   try {
@@ -248,7 +248,6 @@ export async function getOutGoningFriendRequest(req, res) {
   }
 }
 
-
 // cancel request
 
 export async function cancelFriendRequest(req, res) {
@@ -261,7 +260,8 @@ export async function cancelFriendRequest(req, res) {
     status: "pending",
   });
 
-  if (!deleted) return res.status(404).json({ message: "No request to cancel" });
+  if (!deleted)
+    return res.status(404).json({ message: "No request to cancel" });
 
   res.status(200).json({ success: true, message: "Friend request canceled" });
 }
@@ -297,3 +297,69 @@ export async function unfriendUser(req, res) {
     });
   }
 }
+
+// controllers/friendController.js
+export async function getFriendProfiles(req, res) {
+  try {
+    const { id } = req.params; // Extract the friend ID from the URL parameter
+
+    // Find the friend user directly using their ID
+    const friendUser = await user
+      .findById(id)
+      .select("email fullname profilePic learningLanguage nativeLanguage location bio");
+
+    if (!friendUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Friend not found" });
+    }
+
+    // Verify that this user is actually a friend of the logged-in user
+    const currentUser = await user.findById(req.user.id).select("friends");
+
+    if (!currentUser.friends.includes(friendUser._id)) {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Not authorized to view this profile",
+        });
+    }
+
+    // Return the friend's details
+    res.status(200).json({
+      success: true,
+      friend: friendUser,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}
+
+
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get user ID from auth middleware
+
+    const userProfile = await user.findById(userId).select("-password -friends -isOnboarded -updatedAt"); 
+    if (!userProfile) {
+      return res.status(404).json({ 
+        success: false,
+        message: "User not found" 
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user: userProfile
+    });
+  } catch (err) {
+    console.error("Error fetching user profile:", err);
+    res.status(500).json({ 
+      success: false,
+      message: "Internal server error" 
+    });
+  }
+};

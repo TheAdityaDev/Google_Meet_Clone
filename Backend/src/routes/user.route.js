@@ -3,10 +3,12 @@ import { protectedRoute } from "../middleware/auth.middleare.js";
 import {
   acceptFriendRequest,
   cancelFriendRequest,
+  getFriendProfiles,
   getFriendRequest,
   getMyFriends,
   getOutGoningFriendRequest,
   getRecommendedUsers,
+  getUserProfile,
   rejectFriendRequest,
   sendFriendRequest,
   unfriendUser,
@@ -33,6 +35,11 @@ router.delete('/friend/:id',unfriendUser)
 router.get("/friend-requests",getFriendRequest)
 
 router.get("/outgoing-friend-requests",getOutGoningFriendRequest)
+
+router.get('/friend-profile/:id', getFriendProfiles);
+
+
+router.get("/user-profile", getUserProfile);
 
 
 export default router;

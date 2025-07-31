@@ -243,7 +243,7 @@ const HomePage = () => {
                       <div className="card-actions mt-4">
                         {hasRequestBeenSent ? (
                           <button
-                            className="btn w-full mt-2 text-white bg-red-600 hover:bg-red-700"
+                            className="btn w-full mt-2 text-white btn-error"
                             onClick={() => cancelRequestMutation(user._id)}
                             disabled={sendingRequestIds.has(user._id)}
                           >

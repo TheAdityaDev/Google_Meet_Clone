@@ -136,3 +136,20 @@ export const getStreamToken = async () => {
   return response.data;
 };
 
+
+export const fetchFriendProfiles = async (friendId) => {
+  const response = await axiosInstance.get(`/users/friend-profile/${friendId}`);
+  return response.data; // Assume it returns an array of friend profiles
+};
+
+export const fetchUserProfile = async () => {
+  try {
+    const response = await axiosInstance.get('/users/user-profile', {
+      timeout: 5000, // ⏰ will throw if API hangs over 5s
+    });
+    return response.data.user;
+  } catch (error) {
+    throw error("Something went wrong while fetching profile")
+  }
+};
+

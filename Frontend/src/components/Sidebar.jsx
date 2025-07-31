@@ -55,21 +55,23 @@ const Sidebar = () => {
       </nav>
 
       {/* User Profile Details */}
-      <div className="p-4 border-t border-base-300 mt-auto">
-        <div className="flex items-center gap-3">
-          <div className="avatar">
-            <div className="w-10 rounded-full">
-              <img src={authUserData?.profilePic} alt="Avatar" />
+      <div className="p-4 border-t border-base-300  mt-auto flex items-center justify-center">
+        <Link to={"/profile"}>
+          <div className="flex items-center  gap-3  hover:bg-gray-300/10 rounded-lg w-[150px] px-5 py-3">
+            <div className="avatar">
+              <div className="w-10 rounded-full">
+                <img src={authUserData?.profilePic} alt="Avatar" />
+              </div>
+            </div>
+            <div className="flex-1 pl-3">
+              <p className="font-semibold text-sm">{authUserData?.fullname}</p>
+              <p className="text-xs text-success flex items-center gap-1">
+                <span className="size-2 rounded-full bg-success inline-block" />
+                Online
+              </p>
             </div>
           </div>
-          <div className="flex-1">
-            <p className="font-semibold text-sm">{authUserData?.fullname}</p>
-            <p className="text-xs text-success flex items-center gap-1">
-              <span className="size-2 rounded-full bg-success inline-block" />
-                Online
-            </p>
-          </div>
-        </div>
+        </Link>
       </div>
     </aside>
   );

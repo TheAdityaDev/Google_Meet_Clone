@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteFriend } from "../lib/api"; // make sure path is correct
 import { Link } from "react-router";
 import { LANGUAGE_TO_FLAG } from './../constants/index';
-import {  DeleteIcon, Trash } from "lucide-react";
+import {  Trash } from "lucide-react";
 
 
 

@@ -1,83 +1,81 @@
-// import  { useEffect, useState } from "react";
-// // import useAuthUser from "../hooks/useAuthUser";
+import { useEffect, useState } from "react";
 
-// const SecureAvatar = ({ imageUrl }) => {
-//    const [blobUrl, setBlobUrl] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(false);
-// //   const {authUserData} = useAuthUser()
-// // 
-//   useEffect(() => {
-//     let isMounted = true;
+const SecureAvatar = ({ imageUrl, alt = "User Avatar", size = 40 }) => {
+  const [blobUrl, setBlobUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-//    const fetchImage = async () => {
-//       try {
-//         setLoading(true);
-//         setError(false);
+  useEffect(() => {
+    let isMounted = true;
+    let objectUrl;
 
-//         const response = await fetch(imageUrl, {
-//           credentials: "include", // required if your backend uses cookies
-//         });
+    const fetchImage = async () => {
+      try {
+        setLoading(true);
+        setError(false);
 
-//         if (!response.ok) {
-//           throw new Error(`Image fetch failed: ${response.status}`);
-//         }
+        const response = await fetch(imageUrl, {
+          credentials: "include", // required for cookies/auth
+        });
 
-//         const blob = await response.blob();
-//         const objectUrl = URL.createObjectURL(blob);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image: ${response.status}`);
+        }
 
-//         if (isMounted) {
-//           setBlobUrl(objectUrl);
-//         }
-//       } catch (err) {
-//         console.error("Image load error:", err);
-//         if (isMounted) setError(true);
-//       } finally {
-//         if (isMounted) setLoading(false);
-//       }
-//     };
+        const blob = await response.blob();
+        objectUrl = URL.createObjectURL(blob);
 
-//     if (imageUrl) {
-//       fetchImage();
-//     }
+        if (isMounted) {
+          setBlobUrl(objectUrl);
+        }
+      } catch (err) {
+        console.error("🔴 Error loading avatar:", err);
+        if (isMounted) setError(true);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
 
-//     return () => {
-//       isMounted = false;
-//       if (blobUrl) {
-//         URL.revokeObjectURL(blobUrl); // cleanup
-//       }
-//     };
-//   }, [imageUrl]);
+    if (imageUrl) {
+      fetchImage();
+    }
 
+    return () => {
+      isMounted = false;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [imageUrl]);
 
-//   if (loading) {
-//     return (
-//       <div className="size-10 bg-gray-200 loading-ring animate-pulse"/> 
-//     );
-//   } 
+  if (loading) {
+    return (
+      <div
+        className="rounded-full bg-gray-200 animate-pulse"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
 
-//   if (!error || !blobUrl) {
-//     return (
-//       <img
-//         src="/default-avatar.png"
-//         alt="Fallback Avatar"
-//       />
-//     );
-//   }
+  if (error || !blobUrl) {
+    return (
+      <img
+        src="/default-avatar.png"
+        alt="Fallback Avatar"
+        className="rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
 
-// //   return (
-// //     <img
-// //       src={blobUrl || authUserData?.profilePic}
-// //       alt="User Avatar"
-// //     />
-// //   );
+  return (
+    <img
+      src={blobUrl}
+      alt={alt}
+      className="rounded-full object-cover"
+      style={{ width: size, height: size }}
+    />
+  );
+};
 
-//   return (
-//     <img
-//       src={blobUrl} // fallback in case blobUrl is null
-//       alt="User Avatar"
-//     />
-//   );
-// };
-
-// export default SecureAvatar;
+export default SecureAvatar;

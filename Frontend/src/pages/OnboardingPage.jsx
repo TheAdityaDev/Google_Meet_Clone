@@ -67,9 +67,7 @@ const OnboardingPage = () => {
   });
 
   // Toast success
-  setTimeout(() => {
-    toast.success("Avatar updated successfully!");
-  }, 3000);
+  toast.success("Avatar updated successfully!");
 };
 
   // From submission method

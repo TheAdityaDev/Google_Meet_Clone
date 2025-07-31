@@ -15,7 +15,6 @@ const Navbar = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
   });
 
-
   console.log("Profile Pic URL:", authUserData?.profilePic);
 
   const isChatPage = location.pathname?.startsWith("/chat");
@@ -27,14 +26,14 @@ const Navbar = () => {
           {/* Logo in the chat page*/}
           {isChatPage && (
             <div className="pl-5">
-              <Link to="/" className="flex items-center gap-2.5">
+              <Link to="/" className="flex items-center gap-4">
                 <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
                   Meet
                 </span>
               </Link>
             </div>
           )}
-          <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+          <div className="flex items-center gap-10 sm:gap-4 ml-auto">
             <Link to="/notification">
               <button className="btn btn-ghost btn-circle">
                 <BellIcon className="size-6 text-base-content opacity-70" />
@@ -45,12 +44,16 @@ const Navbar = () => {
           <ThemeSelector />
 
           {/* Avatar */}
-          <div className="avatar">
-            <div className="w-9 rounded-full">
-             <img src={authUserData?.profilePic} alt="" />
-             {/* <SecureAvatar /> */}
+          <Link to={"/profile"}>
+            <div className="avatar">
+              <div className="w-9 rounded-full ml-3 mr-3">
+                <img
+                  src={authUserData?.profilePic}
+                  alt={authUserData?.fullname}
+                />
+              </div>
             </div>
-          </div>
+          </Link>
 
           {/* Logout Button */}
           <button className="btn btn-ghost btn-circle" onClick={logoutMutation}>

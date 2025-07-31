@@ -17,6 +17,13 @@ const Layout = lazy(() => import("./components/Layout"));
 
 const OnboargdingPage = lazy(() => import("./pages/OnboardingPage"));
 
+const FriendCards = lazy(() => import("./components/FriendCards"));
+
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+
+const UserProfile = lazy(() => import("./components/UserProfile"));
+
+
 const App = () => {
   const { authUser, authUserData } = useAuthUser();
 
@@ -104,6 +111,49 @@ const App = () => {
               )
             ) : (
               <Navigate to="/login" />
+            )
+          }
+        />
+         <Route
+          path="/friends"
+          element={
+            isAuthenticated && isOnboard ? (
+              <Layout showSildeBar={true}>
+                <FriendCards />
+              </Layout>
+            ) : (
+              <Navigate
+                to={!isAuthenticated ? "/login" : "/onboard"}
+                replace={true}
+              />
+            )
+          }
+        />
+
+         <Route
+          path="/profile/:id"
+          element={
+            isAuthenticated && isOnboard ? (
+                <ProfilePage />
+            ) : (
+              <Navigate
+                to={!isAuthenticated ? "/login" : "/onboard"}
+                replace={true}
+              />
+            )
+          }
+        />
+
+         <Route
+          path="/profile"
+          element={
+            isAuthenticated && isOnboard ? (
+                <UserProfile />
+            ) : (
+              <Navigate
+                to={!isAuthenticated ? "/login" : "/onboard"}
+                replace={true}
+              />
             )
           }
         />
