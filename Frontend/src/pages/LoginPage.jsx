@@ -12,7 +12,6 @@ const LoginPage = () => {
   const {isPending , error ,loginMutatiom} = useLogin();
 
 
-
   const handleSignup = (e) => {
     e.preventDefault();
     loginMutatiom(loginData);
