@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserProfile } from "../lib/api";
+import { Link } from "react-router";
+import {  X } from "lucide-react";
 
 const ProfilePage = () => {
   const {
@@ -56,6 +58,9 @@ const ProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <Link to="/" className="btn flex items-center justify-self-end  btn-ghost mb-6">
+        <X className="size-8" />
+      </Link>
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex flex-col sm:flex-row items-center sm:space-x-4">
           <img

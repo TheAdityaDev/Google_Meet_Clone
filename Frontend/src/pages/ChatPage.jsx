@@ -26,7 +26,6 @@ const ChatPage = () => {
 
   // Sream Api key
 
-  const Stream_API_Key = import.meta.env.VITE_STREAM_API_KEY;
 
   const { authUserData } = useAuthUser();
 
@@ -43,7 +42,7 @@ const ChatPage = () => {
     try {
       console.log("Initializing Stream Chat...");
 
-      const client = StreamChat.getInstance(Stream_API_Key);
+      const client = StreamChat.getInstance(import.meta.env.VITE_STREAM_API_KEY);
 
       await client.connectUser(
         {
