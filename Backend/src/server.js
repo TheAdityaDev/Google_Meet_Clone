@@ -18,15 +18,26 @@ app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
-const allowedOrigin = process.env.CORS_ORIGIN;
+const allowedOrigin = process.env.CORS_ORIGIN.split(',');
 
 // set limit to request to apis
 
 
 app.use(cors({
-    origin : allowedOrigin, 
-    credentials : true
-}))
+    origin : function (origin, callback) {
+      // If there's no origin (e.g., for localhost, or some API call), allow it
+      if (!origin || allowedOrigin.indexOf(origin) !== -1) {
+        callback(null, true);  // Allow the request
+      } else {
+        callback(new Error('Somethig went wrong...'));
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials : true,
+  })
+);
+
 app.use(cookieParser());
 app.use(express.json());
 
