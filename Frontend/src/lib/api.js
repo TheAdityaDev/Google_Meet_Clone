@@ -5,20 +5,41 @@ export const signup = async (signupData) => {
     const res = await axiosInstance.post("/auth/signup", signupData);
     return res.data;
   } catch (error) {
-    console.error("Signup error:", error);
-    throw error; // Optional: re-throw for UI handling
+    // Handle specific axios errors gracefully
+    if (error.response) {
+      // Backend responded with a status code (e.g. 400, 409)
+      const errorMessage = error.response.data?.message || 'Signup failed. Please try again.';
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      // Request was made but no response received
+      throw new Error('No response from server. Check your internet connection.');
+    } else {
+      // Something else caused the error
+      throw new Error('Unexpected error during signup.');
+    }
   }
 };
+
 
 export const login = async (loginData) => {
   try {
     const res = await axiosInstance.post("/auth/login", loginData);
     return res.data;
   } catch (error) {
-    console.error("Login error:", error);
-    throw error; // Optional: re-throw for UI handling
+    if (error.response) {
+      // Server responded with a status code (e.g. 401, 400)
+      const errorMessage = error.response.data?.message || 'Login failed. Please check your credentials.';
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      // Request was made but no response (e.g. network issue)
+      throw new Error('No response from server. Please check your internet connection.');
+    } else {
+      // Something else happened
+      throw new Error('Unexpected error during login.');
+    }
   }
 };
+
 
 export const logout = async () => {
   try {
