@@ -20,7 +20,6 @@ export const signup = async (signupData) => {
   }
 };
 
-
 export const login = async (loginData) => {
   try {
     const res = await axiosInstance.post("/auth/login", loginData);
@@ -40,112 +39,115 @@ export const login = async (loginData) => {
   }
 };
 
-
 export const logout = async () => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const res = await axiosInstance.post("/auth/logout");
     return res.data;
   } catch (error) {
-    console.error("Logout error:", error);
-    throw error; // Optional: re-throw for UI handling
+    throw error;
   }
 };
+
 export const AuthUser = async () => {
   try {
     const res = await axiosInstance.get("/auth/me");
     return res.data;
+  // eslint-disable-next-line no-unused-vars
   } catch (error) {
-    console.error("fetching  error:", error);
     return null;
   }
 };
 
 export const getUserFriends = async () => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const res = await axiosInstance.get("/users/friends");
     return res.data;
   } catch (error) {
-    console.error("Fetch to friend error:", error);
-    throw error; // Optional: re-throw for UI handling
+    throw error;
   }
 };
 
 export const getRecommendedUser = async () => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const res = await axiosInstance.get("/users");
     return res.data;
   } catch (error) {
-    console.error("Fetch to friends error:", error);
-    throw error; // Optional: re-throw for UI handling
+    throw error;
   }
 };
 
 export const outGoingFriendReqs = async () => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const res = await axiosInstance.get("/users/outgoing-friend-requests");
     return res.data;
   } catch (error) {
-    console.error("Fetch to friends error:", error);
-    throw error; // Optional: re-throw for UI handling
+    throw error;
   }
 };
 
 export const sendFriendRequest = async (userId) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const res = await axiosInstance.post(`/users/friend-request/${userId}`);
     return res.data;
   } catch (error) {
-    console.error("send to friends request error:", error);
-    throw error; // Optional: re-throw for UI handling
+    throw error;
   }
 };
+
 export const completeOnboarding = async (userData) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await axiosInstance.post("/auth/onboarding", userData);
     return response.data;
   } catch (error) {
-    console.log('Error onboard',error);
+    throw error;
   }
 };
 
 export const getFriendRequest = async () => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await axiosInstance.get("/users/friend-requests");
     return response.data;
   } catch (error) {
-    console.log("The friend request error", error);
+    throw error;
   }
 };
 
-
 export const cancelFriendRequest = async (userId) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await axiosInstance.delete(`/users/friend-request/${userId}/cancel`);
     return response.data;
   } catch (error) {
-    console.log("Cancel error", error);
+    throw error;
   }
 };
 
 export const acceptFriendRequest = async (requestId) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await axiosInstance.put(`/users/friend-request/${requestId}/accept`,requestId);
     return response.data;
   } catch (error) {
-    console.log("Accept friend request error", error);
+    throw error;
   }
 };
 
-
 export const rejectFriendRequest = async (requestId) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await axiosInstance.put(`/users/friend-request/${requestId}/reject`,requestId);
     return response.data;
   } catch (error) {
-    console.log("Accept friend request error", error);
+    throw error;
   }
 };
-
 
 export const deleteFriend = async (friendId) => {
   const response = await axiosInstance.delete(`/users/friend/${friendId}`);
@@ -157,16 +159,15 @@ export const getStreamToken = async () => {
   return response.data;
 };
 
-
 export const fetchFriendProfiles = async (friendId) => {
   const response = await axiosInstance.get(`/users/friend-profile/${friendId}`);
-  return response.data; // Assume it returns an array of friend profiles
+  return response.data;
 };
 
 export const fetchUserProfile = async () => {
   try {
     const response = await axiosInstance.get('/users/user-profile', {
-      timeout: 5000, // ⏰ will throw if API hangs over 5s
+      timeout: 5000,
     });
     return response.data.user;
   } catch (error) {
