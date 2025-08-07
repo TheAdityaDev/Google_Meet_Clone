@@ -20,6 +20,7 @@
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.5.2",
     "react-router": "^7.6.3",
+    "react-scripts": "^5.0.1",
     "stream-chat": "^9.13.0",
     "stream-chat-react": "^13.3.0",
     "styled-components": "^6.1.19",

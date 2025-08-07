@@ -59,14 +59,12 @@ export async function signup(req, res) {
       image:user.profilePic || ""
     })
 
-    console.log(`Stream user created ${user.fullname}`)
    } catch (error) {
-    console.error("Error creating stream user:", error);
+    throw new Error("Error creating stream user:", error);
    }
 
     res.status(201).json({ token, user });
   } catch (error) {
-    console.error("Signup error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -101,14 +99,18 @@ export async function login(req, res) {
 
     res.status(200).json({ success: true, token, user });
   } catch (error) {
-    console.error("Login error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
 
 export function logout(req, res) {
-  res.clearCookie("token");
-  res.status(200).json({message:"Logout sucessfully"})
+  try {
+    res.clearCookie("token");
+    res.status(200).json({message:"Logout sucessfully"})
+    
+  } catch (error) {
+     res.status(500).json({ message: "Internal server error" });
+  }
 }
 
 
@@ -146,15 +148,12 @@ export async function  onboard(req,res) {
       image:updateUser.profilePic || ""
     })
 
-    console.log(`Stream user updated on boarding for ${updateUser.fullname}`)
-
    } catch (streamError) {
-    console.error("Error updating stream user:", streamError.message);
+     throw new Error("Error updating stream user:");
    }
 
     res.status(200).json({success:true , user:updateUser})
   } catch (error) {
-    console.error("Onboard error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }

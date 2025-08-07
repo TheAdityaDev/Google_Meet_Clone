@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 export const ConnectToDB = async () => {
   try {
-    const coon = await mongoose
+     mongoose
       .connect(process.env.MONGODB_URI)
-      console.log(`Data Base connect succesfully...` , `Connection : ${coon.connection.host}`)
+      .then((con)=>
+      console.log(`Data Base connect succesfully...${con.connection.host}`));
   } catch (error) {
     console.log(error);
     process.exit(1);
