@@ -23,6 +23,7 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 const UserProfile = lazy(() => import("./components/UserProfile"));
 const JoinGroupPage = lazy(() => import("./pages/JoinGroupPage"));
+const LingoTypePage = lazy(() => import("./pages/LingoTypePage"));
 
 
 import IncomingCallModal from "./components/IncomingCallModal";
@@ -163,6 +164,22 @@ const App = () => {
           element={
             isAuthenticated && isOnboard ? (
                 <UserProfile />
+            ) : (
+              <Navigate
+                to={!isAuthenticated ? "/login" : "/onboard"}
+                replace={true}
+              />
+            )
+          }
+        />
+
+         <Route
+          path="/lingotype"
+          element={
+            isAuthenticated && isOnboard ? (
+              <Layout showSildeBar={true}>
+                <LingoTypePage />
+              </Layout>
             ) : (
               <Navigate
                 to={!isAuthenticated ? "/login" : "/onboard"}

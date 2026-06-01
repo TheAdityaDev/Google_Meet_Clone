@@ -75,15 +75,16 @@ export async function login(req, res) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+    const user = await userModel.findOne({ email }).select("+password");
 
     const isPasswordCorrect = await user.comparePassword(password);
+
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
 
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
       expiresIn: "7d",
@@ -96,7 +97,7 @@ export async function login(req, res) {
       secure: process.env.NODE_ENV === "production",
     });
 
-    res.status(200).json({ success: true, token, user });
+    res.status(200).json({ success: true, token, user: userWithoutPassword });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -114,7 +115,14 @@ export function logout(req, res) {
 export async function onboard(req, res) {
   try {
     const userId = req.user._id;
-    const { fullname, bio, nativeLanguage, learningLanguage, location, profilePic } = req.body;
+    const {
+      fullname,
+      bio,
+      nativeLanguage,
+      learningLanguage,
+      location,
+      profilePic,
+    } = req.body;
 
     if (
       !fullname ||
@@ -146,7 +154,7 @@ export async function onboard(req, res) {
         profilePic,
         isOnboarded: true,
       },
-      { new: true }
+      { new: true },
     );
 
     if (!updateUser) {

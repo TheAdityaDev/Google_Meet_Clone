@@ -249,12 +249,15 @@ const ChatPage = () => {
               if (!alreadySeen) {
                 return {
                   ...msg,
-                  seenBy: [...msg.seenBy, { userId: seerId, seenAt: new Date() }],
+                  seenBy: [
+                    ...msg.seenBy,
+                    { userId: seerId, seenAt: new Date() },
+                  ],
                 };
               }
             }
             return msg;
-          })
+          }),
         );
       }
     });
@@ -262,7 +265,9 @@ const ChatPage = () => {
     // Real-time Poll updates
     socket.on("poll:vote", ({ messageId, pollOptions: updatedOptions }) => {
       setMessages((prev) =>
-        prev.map((msg) => (msg._id === messageId ? { ...msg, pollOptions: updatedOptions } : msg))
+        prev.map((msg) =>
+          msg._id === messageId ? { ...msg, pollOptions: updatedOptions } : msg,
+        ),
       );
     });
 
@@ -270,7 +275,9 @@ const ChatPage = () => {
     socket.on("message:update", (updatedMessage) => {
       if (updatedMessage.chat === chatId) {
         setMessages((prev) =>
-          prev.map((msg) => (msg._id === updatedMessage._id ? updatedMessage : msg))
+          prev.map((msg) =>
+            msg._id === updatedMessage._id ? updatedMessage : msg,
+          ),
         );
       }
     });
@@ -290,8 +297,8 @@ const ChatPage = () => {
                 pollOptions: [],
                 eventDetails: undefined,
               }
-            : msg
-        )
+            : msg,
+        ),
       );
     });
 
@@ -339,14 +346,22 @@ const ChatPage = () => {
 
     if (!isTyping) {
       setIsTyping(true);
-      socket.emit("typing:start", { chatId, senderId: authUserData?._id, receiverId: targetUserId });
+      socket.emit("typing:start", {
+        chatId,
+        senderId: authUserData?._id,
+        receiverId: targetUserId,
+      });
     }
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
-      socket.emit("typing:stop", { chatId, senderId: authUserData?._id, receiverId: targetUserId });
+      socket.emit("typing:stop", {
+        chatId,
+        senderId: authUserData?._id,
+        receiverId: targetUserId,
+      });
     }, 2000);
   };
 
@@ -361,7 +376,11 @@ const ChatPage = () => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     setIsTyping(false);
     if (!isGroupChat) {
-      socket.emit("typing:stop", { chatId, senderId: authUserData?._id, receiverId: targetUserId });
+      socket.emit("typing:stop", {
+        chatId,
+        senderId: authUserData?._id,
+        receiverId: targetUserId,
+      });
     }
 
     try {
@@ -507,7 +526,7 @@ const ChatPage = () => {
       },
       () => {
         toast.error("Unable to retrieve location");
-      }
+      },
     );
     setIsAttachmentOpen(false);
   };
@@ -579,13 +598,21 @@ const ChatPage = () => {
   // Translate messages
   const handleTranslateMessage = (messageId, contentText, targetLangCode) => {
     // Smart translator mock: Look if message contains keys in dictionary
-    const cleanWord = contentText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim();
+    const cleanWord = contentText
+      .toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
+      .trim();
     let translated = "";
-    
+
     // Exact mapping or fallbacks
     if (TRANSLATION_MOCKS[targetLangCode]) {
       const langDict = TRANSLATION_MOCKS[targetLangCode];
-      if (cleanWord.includes("hello") || cleanWord.includes("hola") || cleanWord.includes("bonjour") || cleanWord.includes("नमस्ते")) {
+      if (
+        cleanWord.includes("hello") ||
+        cleanWord.includes("hola") ||
+        cleanWord.includes("bonjour") ||
+        cleanWord.includes("नमस्ते")
+      ) {
         translated = langDict.hello;
       } else if (cleanWord.includes("hi")) {
         translated = langDict.hi;
@@ -597,7 +624,10 @@ const ChatPage = () => {
         translated = langDict.yes;
       } else if (cleanWord.includes("no")) {
         translated = langDict.no;
-      } else if (cleanWord.includes("video call") || cleanWord.includes("call")) {
+      } else if (
+        cleanWord.includes("video call") ||
+        cleanWord.includes("call")
+      ) {
         translated = langDict.call;
       } else {
         // Fallback: Mock Translate effect (reversing or appending letters)
@@ -632,7 +662,20 @@ const ChatPage = () => {
     return (
       <div className="flex items-center gap-1 h-5 mt-2 px-2 bg-slate-950/20 py-1.5 rounded-lg w-full max-w-[200px]">
         {[...Array(12)].map((_, i) => {
-          const heightClass = ["h-2", "h-4", "h-3", "h-5", "h-2", "h-4", "h-3", "h-5", "h-2", "h-3", "h-4", "h-1"][i % 12];
+          const heightClass = [
+            "h-2",
+            "h-4",
+            "h-3",
+            "h-5",
+            "h-2",
+            "h-4",
+            "h-3",
+            "h-5",
+            "h-2",
+            "h-3",
+            "h-4",
+            "h-1",
+          ][i % 12];
           return (
             <span
               key={i}
@@ -675,14 +718,21 @@ const ChatPage = () => {
   const friendUser = isGroupChat
     ? null
     : chat.participants.find((p) => p._id !== authUserData?._id);
-  const isOnline = isGroupChat ? false : friendUser ? onlineUsers.includes(friendUser._id) : false;
+  const isOnline = isGroupChat
+    ? false
+    : friendUser
+      ? onlineUsers.includes(friendUser._id)
+      : false;
 
   return (
     <div className="flex flex-col h-[91vh] bg-slate-950 text-slate-100 relative">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800 z-10">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/")} className="btn btn-ghost btn-circle btn-sm lg:hidden text-slate-300">
+          <button
+            onClick={() => navigate("/")}
+            className="btn btn-ghost btn-circle btn-sm lg:hidden text-slate-300"
+          >
             <ArrowLeft className="size-5" />
           </button>
 
@@ -696,7 +746,10 @@ const ChatPage = () => {
             ) : (
               <div className={`avatar ${isOnline ? "online" : "offline"}`}>
                 <div className="w-10 h-10 rounded-full ring-2 ring-indigo-500/50">
-                  <img src={friendUser?.profilePic} alt={friendUser?.fullname} />
+                  <img
+                    src={friendUser?.profilePic}
+                    alt={friendUser?.fullname}
+                  />
                 </div>
               </div>
             )}
@@ -755,8 +808,12 @@ const ChatPage = () => {
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-2">
             <Smile className="size-16 animate-pulse text-indigo-500" />
-            <p className="text-lg font-semibold text-slate-300">Start the conversation</p>
-            <p className="text-sm text-slate-500">Send an emoji, file, location, or voice note.</p>
+            <p className="text-lg font-semibold text-slate-300">
+              Start the conversation
+            </p>
+            <p className="text-sm text-slate-500">
+              Send an emoji, file, location, or voice note.
+            </p>
           </div>
         ) : (
           messages.map((msg, index) => {
@@ -773,11 +830,16 @@ const ChatPage = () => {
             const messageTranslation = translatedMessages[msg._id];
 
             return (
-              <div key={msg._id || index} className={`chat ${isMe ? "chat-end" : "chat-start"}`}>
+              <div
+                key={msg._id || index}
+                className={`chat ${isMe ? "chat-end" : "chat-start"}`}
+              >
                 <div className="chat-image avatar">
                   <div className="w-8 rounded-full border border-slate-800">
                     <img
-                      src={isMe ? authUserData?.profilePic : msg.sender.profilePic}
+                      src={
+                        isMe ? authUserData?.profilePic : msg.sender.profilePic
+                      }
                       alt="Avatar"
                     />
                   </div>
@@ -791,14 +853,24 @@ const ChatPage = () => {
                 {/* Message Bubble wrapper */}
                 <div className="relative group max-w-xs md:max-w-md">
                   <div
-                    className={`chat-bubble w-auto text-nowrap p-3 rounded-2xl ${
+                    className={`chat-bubble
+                        max-w-[280px]
+                        sm:max-w-md
+                        lg:max-w-lg
+                        p-3
+                        rounded-2xl
+                        break-words
+                    ${
                       isMe
-                        ? "bg-indigo-600 text-white shadow-indigo-600/10 shadow-lg"
+                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/10"
                         : "bg-slate-900 border border-slate-800 text-slate-100"
-                    }`}
+                    }
+`}
                   >
                     {msg.isDeleted ? (
-                      <p className="italic text-slate-400 text-sm">This message was deleted</p>
+                      <p className="italic text-slate-400 text-sm">
+                        This message was deleted
+                      </p>
                     ) : editingMessageId === msg._id ? (
                       <div className="flex flex-col gap-2 w-48 sm:w-64">
                         <input
@@ -838,7 +910,9 @@ const ChatPage = () => {
                               className="rounded-lg max-h-60 object-cover w-full cursor-pointer hover:opacity-90 transition-opacity"
                               onClick={() => window.open(msg.fileUrl)}
                             />
-                            {msg.content && msg.content !== "Image" && <p className="text-sm">{msg.content}</p>}
+                            {msg.content && msg.content !== "Image" && (
+                              <p className="text-sm">{msg.content}</p>
+                            )}
                           </div>
                         )}
 
@@ -850,8 +924,12 @@ const ChatPage = () => {
                           >
                             <FileText className="size-8 text-indigo-400" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold truncate text-slate-200">{msg.content}</p>
-                              <p className="text-[10px] text-slate-400">Click to download</p>
+                              <p className="text-sm font-semibold truncate text-slate-200">
+                                {msg.content}
+                              </p>
+                              <p className="text-[10px] text-slate-400">
+                                Click to download
+                              </p>
                             </div>
                           </a>
                         )}
@@ -861,7 +939,9 @@ const ChatPage = () => {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => {
-                                  const audioEl = document.getElementById(`audio-${msg._id}`);
+                                  const audioEl = document.getElementById(
+                                    `audio-${msg._id}`,
+                                  );
                                   handleAudioPlay(msg._id, audioEl);
                                 }}
                                 className="btn btn-circle btn-xs btn-primary text-white"
@@ -872,8 +952,14 @@ const ChatPage = () => {
                                   <Play className="size-3 pl-0.5" />
                                 )}
                               </button>
-                              <span className="text-xs text-slate-300 font-medium">Voice Note</span>
-                              <audio id={`audio-${msg._id}`} src={msg.fileUrl} className="hidden" />
+                              <span className="text-xs text-slate-300 font-medium">
+                                Voice Note
+                              </span>
+                              <audio
+                                id={`audio-${msg._id}`}
+                                src={msg.fileUrl}
+                                className="hidden"
+                              />
                             </div>
                             {renderAudioWave(msg._id)}
                           </div>
@@ -883,7 +969,9 @@ const ChatPage = () => {
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
                               <MapPin className="size-5 text-rose-500 animate-bounce" />
-                              <span className="font-semibold text-sm">Location Shared</span>
+                              <span className="font-semibold text-sm">
+                                Location Shared
+                              </span>
                             </div>
                             <a
                               href={`https://www.google.com/maps/search/?api=1&query=${msg.location.latitude},${msg.location.longitude}`}
@@ -900,33 +988,54 @@ const ChatPage = () => {
                           <div className="space-y-3 w-56 sm:w-72">
                             <div className="flex items-center gap-2 border-b border-slate-800 pb-1.5">
                               <BarChart2 className="size-5 text-indigo-400" />
-                              <span className="font-bold text-sm text-slate-200">{msg.pollQuestion}</span>
+                              <span className="font-bold text-sm text-slate-200">
+                                {msg.pollQuestion}
+                              </span>
                             </div>
                             <div className="space-y-2">
                               {msg.pollOptions.map((opt) => {
-                                const totalVotes = msg.pollOptions.reduce((acc, o) => acc + o.votes.length, 0);
-                                const percent = totalVotes > 0 ? (opt.votes.length / totalVotes) * 100 : 0;
-                                const hasVoted = opt.votes.includes(authUserData?._id);
+                                const totalVotes = msg.pollOptions.reduce(
+                                  (acc, o) => acc + o.votes.length,
+                                  0,
+                                );
+                                const percent =
+                                  totalVotes > 0
+                                    ? (opt.votes.length / totalVotes) * 100
+                                    : 0;
+                                const hasVoted = opt.votes.includes(
+                                  authUserData?._id,
+                                );
 
                                 return (
                                   <div
                                     key={opt._id}
-                                    onClick={() => handleVote(msg._id, opt._id)}
-                                    className={`group/opt p-2 rounded-lg border text-xs cursor-pointer relative overflow-hidden transition-all ${
-                                      hasVoted
-                                        ? "border-indigo-500 bg-indigo-500/10"
+                                    onClick={() =>
+                                      !hasVoted && handleVote(msg._id, opt._id)
+                                    }
+                                    className={`relative overflow-hidden rounded-lg border p-3 cursor-pointer transition-all
+                                    ${
+                                      hasVoted === opt._id
+                                        ? "border-green-500 bg-green-500/10"
                                         : "border-slate-800 bg-slate-950/40 hover:bg-slate-950/70"
-                                    }`}
+                                    }
+                                    ${hasVoted ? "cursor-default" : "cursor-pointer"}
+                                  `}
                                   >
-                                    {/* Fill background bar */}
+                                    {/* Progress Bar */}
                                     <div
-                                      className="absolute left-0 top-0 bottom-0 bg-indigo-500/10 transition-all duration-500"
+                                      className="absolute inset-y-0 left-0 bg-indigo-500/20 transition-all duration-500"
                                       style={{ width: `${percent}%` }}
                                     />
-                                    <div className="relative flex justify-between items-center z-10">
-                                      <span className="font-medium text-slate-200">{opt.optionText}</span>
-                                      <span className="text-[10px] text-slate-400">
-                                        {opt.votes.length} votes ({percent.toFixed(0)}%)
+
+                                    {/* Content */}
+                                    <div className="relative z-10 flex items-center justify-between">
+                                      <span className="font-medium text-slate-200">
+                                        {opt.optionText}
+                                      </span>
+
+                                      <span className="text-xs text-slate-400">
+                                        {opt.votes.length} votes (
+                                        {percent.toFixed(0)}%)
                                       </span>
                                     </div>
                                   </div>
@@ -940,10 +1049,14 @@ const ChatPage = () => {
                           <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-xl space-y-2.5 w-52 sm:w-64">
                             <div className="flex items-center gap-2">
                               <Calendar className="size-5 text-amber-500" />
-                              <span className="font-bold text-sm text-slate-200">{msg.eventDetails.title}</span>
+                              <span className="font-bold text-sm text-slate-200">
+                                {msg.eventDetails.title}
+                              </span>
                             </div>
                             {msg.eventDetails.description && (
-                              <p className="text-xs text-slate-400 italic break-words">{msg.eventDetails.description}</p>
+                              <p className="text-xs text-slate-400 italic break-words">
+                                {msg.eventDetails.description}
+                              </p>
                             )}
                             <div className="text-[10px] text-slate-300 flex justify-between bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/50">
                               <span>📅 {msg.eventDetails.date}</span>
@@ -956,7 +1069,9 @@ const ChatPage = () => {
                           <p className="break-words text-sm md:text-base leading-relaxed">
                             {msg.content}
                             {msg.isEdited && (
-                              <span className="text-[10px] text-slate-400/60 ml-2 font-normal italic">(edited)</span>
+                              <span className="text-[10px] text-slate-400/60 ml-2 font-normal italic">
+                                (edited)
+                              </span>
                             )}
                           </p>
                         )}
@@ -964,34 +1079,59 @@ const ChatPage = () => {
                     )}
 
                     {/* Show Translation below text */}
-                    {!msg.isDeleted && messageTranslation && Object.keys(messageTranslation).map((code) => (
-                      <div key={code} className="mt-2 pt-2 border-t border-slate-800/80 text-xs text-indigo-300 italic flex flex-col gap-0.5">
-                        <span className="text-[9px] text-slate-500 not-italic uppercase font-semibold">Translated ({TRANSLATION_LANGUAGES[code]}):</span>
-                        <span>{messageTranslation[code]}</span>
-                      </div>
-                    ))}
+                    {!msg.isDeleted &&
+                      messageTranslation &&
+                      Object.keys(messageTranslation).map((code) => (
+                        <div
+                          key={code}
+                          className="mt-2 pt-2 border-t border-slate-800/80 text-xs text-indigo-300 italic flex flex-col gap-0.5"
+                        >
+                          <span className="text-[9px] text-slate-500 not-italic uppercase font-semibold">
+                            Translated ({TRANSLATION_LANGUAGES[code]}):
+                          </span>
+                          <span>{messageTranslation[code]}</span>
+                        </div>
+                      ))}
                   </div>
 
                   {/* Actions Hover Menu */}
                   {!msg.isDeleted && (
                     <div className="absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 z-10 px-2 right-full mr-2">
                       {/* Translate Globe */}
-                      {(!msg.fileType || msg.fileType === "" || msg.fileType === "audio" || msg.fileType === "image") && (
+                      {(!msg.fileType ||
+                        msg.fileType === "" ||
+                        msg.fileType === "audio" ||
+                        msg.fileType === "image") && (
                         <div className="dropdown dropdown-left">
-                          <label tabIndex={0} className="btn btn-circle btn-xs btn-outline border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white" title="Translate Message">
+                          <label
+                            tabIndex={0}
+                            className="btn btn-circle btn-xs btn-outline border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white"
+                            title="Translate Message"
+                          >
                             <Globe className="size-3" />
                           </label>
-                          <ul tabIndex={0} className="dropdown-content menu p-1 shadow bg-slate-900 border border-slate-800 rounded-box w-28 text-[11px] divide-y divide-slate-800/50 z-20">
-                            {Object.entries(TRANSLATION_LANGUAGES).map(([code, name]) => (
-                              <li key={code}>
-                                <button
-                                  onClick={() => handleTranslateMessage(msg._id, msg.content, code)}
-                                  className="px-2 py-1.5 text-left text-slate-200 hover:bg-slate-800 rounded-md"
-                                >
-                                  {name}
-                                </button>
-                              </li>
-                            ))}
+                          <ul
+                            tabIndex={0}
+                            className="dropdown-content menu p-1 shadow bg-slate-900 border border-slate-800 rounded-box w-28 text-[11px] divide-y divide-slate-800/50 z-20"
+                          >
+                            {Object.entries(TRANSLATION_LANGUAGES).map(
+                              ([code, name]) => (
+                                <li key={code}>
+                                  <button
+                                    onClick={() =>
+                                      handleTranslateMessage(
+                                        msg._id,
+                                        msg.content,
+                                        code,
+                                      )
+                                    }
+                                    className="px-2 py-1.5 text-left text-slate-200 hover:bg-slate-800 rounded-md"
+                                  >
+                                    {name}
+                                  </button>
+                                </li>
+                              ),
+                            )}
                           </ul>
                         </div>
                       )}
@@ -1008,7 +1148,20 @@ const ChatPage = () => {
                               className="btn btn-circle btn-xs btn-outline border-slate-800 bg-slate-900 text-indigo-400 hover:bg-slate-800 hover:text-indigo-300"
                               title="Edit Message"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                              </svg>
                             </button>
                           )}
                           <button
@@ -1016,7 +1169,21 @@ const ChatPage = () => {
                             className="btn btn-circle btn-xs btn-outline border-slate-800 bg-slate-900 text-rose-500 hover:bg-slate-800 hover:text-rose-400"
                             title="Delete Message"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M3 6h18" />
+                              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                            </svg>
                           </button>
                         </>
                       )}
@@ -1067,10 +1234,11 @@ const ChatPage = () => {
             <div className="flex items-center gap-3 pl-4">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
               <span className="text-sm font-semibold text-slate-300">
-                Recording: {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")}
+                Recording: {Math.floor(recordingTime / 60)}:
+                {(recordingTime % 60).toString().padStart(2, "0")}
               </span>
             </div>
-            
+
             {/* Record Controls */}
             <div className="flex gap-2">
               <button
@@ -1157,13 +1325,18 @@ const ChatPage = () => {
             )}
 
             {/* Input form element */}
-            <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
+            <form
+              onSubmit={handleSendMessage}
+              className="flex gap-2 items-center"
+            >
               {/* Expand Attachments "+" button */}
               <button
                 type="button"
                 onClick={() => setIsAttachmentOpen(!isAttachmentOpen)}
                 className={`btn btn-circle btn-sm md:btn-md border-0 transition-transform ${
-                  isAttachmentOpen ? "bg-slate-800 text-white rotate-45" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  isAttachmentOpen
+                    ? "bg-slate-800 text-white rotate-45"
+                    : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                 }`}
               >
                 <Plus className="size-5" />
@@ -1208,14 +1381,19 @@ const ChatPage = () => {
               <h3 className="font-bold text-slate-100 flex items-center gap-1.5">
                 <BarChart2 className="size-5 text-indigo-400" /> Create Poll
               </h3>
-              <button onClick={() => setIsPollModalOpen(false)} className="text-slate-400 hover:text-slate-200">
+              <button
+                onClick={() => setIsPollModalOpen(false)}
+                className="text-slate-400 hover:text-slate-200"
+              >
                 <X className="size-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleCreatePoll} className="space-y-4">
               <div className="form-control">
-                <label className="label-text text-slate-400 text-xs mb-1">Question</label>
+                <label className="label-text text-slate-400 text-xs mb-1">
+                  Question
+                </label>
                 <input
                   type="text"
                   placeholder="Ask something..."
@@ -1227,7 +1405,9 @@ const ChatPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="label-text text-slate-400 text-xs">Options</label>
+                <label className="label-text text-slate-400 text-xs">
+                  Options
+                </label>
                 {pollOptions.map((opt, i) => (
                   <input
                     key={i}
@@ -1243,7 +1423,7 @@ const ChatPage = () => {
                     required={i < 2}
                   />
                 ))}
-                
+
                 {pollOptions.length < 4 && (
                   <button
                     type="button"
@@ -1255,7 +1435,10 @@ const ChatPage = () => {
                 )}
               </div>
 
-              <button type="submit" className="btn btn-primary btn-sm text-white w-full">
+              <button
+                type="submit"
+                className="btn btn-primary btn-sm text-white w-full"
+              >
                 Share Poll
               </button>
             </form>
@@ -1271,14 +1454,19 @@ const ChatPage = () => {
               <h3 className="font-bold text-slate-100 flex items-center gap-1.5">
                 <Calendar className="size-5 text-amber-400" /> Create Event
               </h3>
-              <button onClick={() => setIsEventModalOpen(false)} className="text-slate-400 hover:text-slate-200">
+              <button
+                onClick={() => setIsEventModalOpen(false)}
+                className="text-slate-400 hover:text-slate-200"
+              >
                 <X className="size-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleCreateEvent} className="space-y-3">
               <div className="form-control">
-                <label className="label-text text-slate-400 text-xs mb-1">Event Title</label>
+                <label className="label-text text-slate-400 text-xs mb-1">
+                  Event Title
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. Project Review"
@@ -1290,7 +1478,9 @@ const ChatPage = () => {
               </div>
 
               <div className="form-control">
-                <label className="label-text text-slate-400 text-xs mb-1">Description</label>
+                <label className="label-text text-slate-400 text-xs mb-1">
+                  Description
+                </label>
                 <textarea
                   placeholder="Add details..."
                   value={eventDesc}
@@ -1301,7 +1491,9 @@ const ChatPage = () => {
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="form-control">
-                  <label className="label-text text-slate-400 text-xs mb-1">Date</label>
+                  <label className="label-text text-slate-400 text-xs mb-1">
+                    Date
+                  </label>
                   <input
                     type="date"
                     value={eventDate}
@@ -1311,7 +1503,9 @@ const ChatPage = () => {
                   />
                 </div>
                 <div className="form-control">
-                  <label className="label-text text-slate-400 text-xs mb-1">Time</label>
+                  <label className="label-text text-slate-400 text-xs mb-1">
+                    Time
+                  </label>
                   <input
                     type="time"
                     value={eventTime}
@@ -1322,7 +1516,10 @@ const ChatPage = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-sm text-white w-full pt-2">
+              <button
+                type="submit"
+                className="btn btn-primary btn-sm text-white w-full pt-2"
+              >
                 Share Event
               </button>
             </form>
@@ -1350,14 +1547,18 @@ const ChatPage = () => {
               <h3 className="font-bold text-slate-100 flex items-center gap-1.5">
                 <Share2 className="size-5 text-indigo-400" /> Share Invitation
               </h3>
-              <button onClick={() => setIsInviteModalOpen(false)} className="text-slate-400 hover:text-slate-200">
+              <button
+                onClick={() => setIsInviteModalOpen(false)}
+                className="text-slate-400 hover:text-slate-200"
+              >
                 <X className="size-5" />
               </button>
             </div>
-            
+
             <div className="space-y-4 flex flex-col items-center">
               <p className="text-xs text-slate-400 text-center">
-                Share this link or QR code with friends to let them join this group chat.
+                Share this link or QR code with friends to let them join this
+                group chat.
               </p>
 
               {/* QR Code Container */}
@@ -1371,7 +1572,9 @@ const ChatPage = () => {
 
               {/* Copy Join Link Input */}
               <div className="form-control w-full">
-                <label className="label-text text-slate-400 text-xs mb-1">Invite Link</label>
+                <label className="label-text text-slate-400 text-xs mb-1">
+                  Invite Link
+                </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -1381,7 +1584,9 @@ const ChatPage = () => {
                   />
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/join/group/${chatId}`);
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/join/group/${chatId}`,
+                      );
                       toast.success("Invite link copied to clipboard!");
                     }}
                     className="btn btn-primary btn-sm text-white px-3"

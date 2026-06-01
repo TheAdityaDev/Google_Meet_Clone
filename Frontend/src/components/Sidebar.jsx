@@ -1,4 +1,4 @@
-import { BellIcon, HomeIcon, ShipWheelIcon, UserIcon } from "lucide-react";
+import { BellIcon, HomeIcon, ShipWheelIcon, UserIcon, KeyboardIcon } from "lucide-react";
 import useAuthUser from "../hooks/useAuthUser";
 import { Link, useLocation } from "react-router";
 
@@ -50,6 +50,17 @@ const Sidebar = () => {
         >
           <BellIcon className="size-5 text-base-content opacity-70" />
           <span>Notification</span>
+        </Link>
+
+        {/* LingoType */}
+        <Link
+          to="/lingotype"
+          className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
+            currentPath === "/lingotype" ? "btn-active" : ""
+          }`}
+        >
+          <KeyboardIcon className="size-5 text-base-content opacity-70" />
+          <span>LingoType</span>
         </Link>
       </nav>
 
