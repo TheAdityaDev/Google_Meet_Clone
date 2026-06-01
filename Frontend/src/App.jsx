@@ -22,7 +22,10 @@ const FriendCards = lazy(() => import("./components/FriendCards"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 const UserProfile = lazy(() => import("./components/UserProfile"));
+const JoinGroupPage = lazy(() => import("./pages/JoinGroupPage"));
 
+
+import IncomingCallModal from "./components/IncomingCallModal";
 
 const App = () => {
   const { authUser, authUserData } = useAuthUser();
@@ -36,6 +39,7 @@ const App = () => {
   return (
     <div className="h-screen w-screen overflow-x-hidden" data-theme={theme}>
       <Toaster position="top-right" reverseOrder={false} />
+      <IncomingCallModal />
       <Routes>
         <Route
           path="/"
@@ -97,6 +101,16 @@ const App = () => {
               </Layout>
             ) : (
               <Navigate to={!isAuthenticated ? "/login" : "/onboard "} />
+            )
+          }
+        />
+        <Route
+          path="/join/group/:chatId"
+          element={
+            isAuthenticated && isOnboard ? (
+              <JoinGroupPage />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/login" : "/onboard"} />
             )
           }
         />

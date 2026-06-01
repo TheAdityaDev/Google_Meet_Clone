@@ -10,7 +10,7 @@ import {
   EarthIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { completeOnboarding } from "../lib/api";
+import { completeOnboarding, enhanceUserBio } from "../lib/api";
 import { LANGUAGES } from "../constants";
 const OnboardingPage = () => {
   const { authUserData } = useAuthUser();
@@ -26,6 +26,35 @@ const OnboardingPage = () => {
     location: authUserData?.location || "",
     profilePic: authUserData?.profilePic || "",
   });
+
+  const [bioSuggestions, setBioSuggestions] = useState([]);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+
+  const handleEnhanceBio = async () => {
+    if (!fromState.nativeLanguage || !fromState.learningLanguage || !fromState.location) {
+      toast.error("Please fill in your languages and location first to generate a personalized bio.");
+      return;
+    }
+    setIsEnhancing(true);
+    try {
+      const res = await enhanceUserBio({
+        fullname: fromState.fullname,
+        nativeLanguage: fromState.nativeLanguage,
+        learningLanguage: fromState.learningLanguage,
+        location: fromState.location,
+      });
+      if (res.success && res.bios) {
+        setBioSuggestions(res.bios);
+        toast.success("Bio suggestions generated!");
+      } else {
+        toast.error("Failed to generate bio suggestions.");
+      }
+    } catch (error) {
+      toast.error("Error generating bio suggestions.");
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
 
   if (
     fromState.nativeLanguage &&
@@ -49,26 +78,58 @@ const OnboardingPage = () => {
 
   // Genrate random avatar
 
- const handleRandomAvatar = async (e) => {
+const handleRandomAvatar = async (e) => {
   e.preventDefault();
 
   // Generate a random seed for the avatar
   const seed = Math.random().toString(36).substring(2, 10);
+
+  // Generate the SVG code for the avatar
   const svgCode = multiavatar(seed);
 
-  // Convert SVG to Blob and create a blob URL
-  const blob = new Blob([svgCode], { type: 'image/svg+xml' });
-  const blobUrl = URL.createObjectURL(blob);
+  // Convert SVG to Image (Base64 or Blob)
+  const imageUrl = await svgToImage(svgCode);
 
-  // Update state with blob URL
+  // Update state with the image URL
   setFromState({
     ...fromState,
-    profilePic: blobUrl,
+    profilePic: imageUrl,
   });
 
   // Toast success
   toast.success("Avatar updated successfully!");
 };
+
+// Function to convert SVG to Image
+const svgToImage = (svgCode) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+
+    const svgBlob = new Blob([svgCode], { type: "image/svg+xml" });
+    const svgUrl = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      // Create 300x300 canvas
+      const canvas = document.createElement("canvas");
+      canvas.width = 300;
+      canvas.height = 300;
+
+      const ctx = canvas.getContext("2d");
+
+      // Draw SVG onto 300x300 canvas
+      ctx.drawImage(img, 0, 0, 300, 300);
+
+      // Convert to PNG Base64
+      const base64Image = canvas.toDataURL("image/png");
+      resolve(base64Image);
+    };
+
+    img.onerror = (err) => reject(err);
+    img.src = svgUrl;
+  });
+};
+
+
 
   // From submission method
 
@@ -142,9 +203,23 @@ const OnboardingPage = () => {
             </div>
             {/* Bio */}
             <div className="form-control">
-              <label className="label">
-                <span className="label-text">Bio</span>
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="label">
+                  <span className="label-text">Bio</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={handleEnhanceBio}
+                  className="btn btn-ghost btn-xs text-primary flex items-center gap-1 hover:bg-primary/10"
+                  disabled={isEnhancing}
+                >
+                  {isEnhancing ? (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  ) : (
+                    <span>✨ Enhance Bio with AI</span>
+                  )}
+                </button>
+              </div>
               <textarea
                 name="bio"
                 value={fromState.bio}
@@ -153,6 +228,24 @@ const OnboardingPage = () => {
                 }
                 className="textarea textarea-bordered w-full border-none outline-none resize-none"
               ></textarea>
+              {bioSuggestions.length > 0 && (
+                <div className="mt-2 p-3 bg-base-300 rounded-lg space-y-2 border border-primary/20">
+                  <span className="text-xs font-semibold text-primary block">Select an AI-enhanced Bio:</span>
+                  {bioSuggestions.map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setFromState({ ...fromState, bio: suggestion });
+                        setBioSuggestions([]);
+                      }}
+                      className="w-full text-left text-sm p-2 hover:bg-primary/15 rounded border border-base-content/10 transition-colors"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {/* languages */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

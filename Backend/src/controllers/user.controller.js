@@ -9,8 +9,8 @@ export async function getRecommendedUsers(req, res) {
 
     const recommendedUsers = await user.find({
       $and: [
-        { _id: { $ne: currentUserId } }, //exclued current user
-        { _id: { $nin: currentUser.friends } }, //exclued current user friend
+        { _id: { $ne: currentUserId } }, //exclude current user
+        { _id: { $nin: currentUser.friends } }, //exclude current user friend
         { isOnboarded: true },
       ],
     });
@@ -93,7 +93,6 @@ export async function sendFriendRequest(req, res) {
       friendRequest,
     });
   } catch (err) {
-    console.error("Error sending friend request:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -140,7 +139,6 @@ export async function acceptFriendRequest(req, res) {
       message: "Friend request accepted",
     });
   } catch (error) {
-    console.error("Error accepting friend request:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -187,7 +185,6 @@ export async function rejectFriendRequest(req, res) {
       message: "Friend request rejected and deleted",
     });
   } catch (error) {
-    console.error("Error rejecting friend request:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -218,7 +215,6 @@ export async function getFriendRequest(req, res) {
 
     res.status(200).json({ incomingReqs, acceptRequest });
   } catch (error) {
-    console.error("Error getting friend request:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -240,7 +236,6 @@ export async function getOutGoningFriendRequest(req, res) {
 
     res.status(200).json(outGoningRequest);
   } catch (error) {
-    console.error("Error get friend request:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -249,7 +244,6 @@ export async function getOutGoningFriendRequest(req, res) {
 }
 
 // cancel request
-
 export async function cancelFriendRequest(req, res) {
   const myId = req.user.id;
   const { id: recipientId } = req.params;
@@ -267,7 +261,6 @@ export async function cancelFriendRequest(req, res) {
 }
 
 // unfriend
-
 export async function unfriendUser(req, res) {
   try {
     const myId = req.user.id;
@@ -290,7 +283,6 @@ export async function unfriendUser(req, res) {
       message: "Unfriended successfully and friend record removed from DB",
     });
   } catch (error) {
-    console.error("Error unfriending user:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -332,12 +324,9 @@ export async function getFriendProfiles(req, res) {
       friend: friendUser,
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
-
-
 
 export const getUserProfile = async (req, res) => {
   try {
@@ -356,10 +345,39 @@ export const getUserProfile = async (req, res) => {
       user: userProfile
     });
   } catch (err) {
-    console.error("Error fetching user profile:", err);
     res.status(500).json({ 
       success: false,
       message: "Internal server error" 
     });
   }
 };
+
+// Generate AI bio suggestions based on user information
+export async function enhanceBio(req, res) {
+  try {
+    const { fullname, nativeLanguage, learningLanguage, location } = req.body;
+
+    const name = fullname || req.user.fullname || "a developer";
+    const loc = location || req.user.location || "the cloud";
+    const native = nativeLanguage || req.user.nativeLanguage || "English";
+    const learning = learningLanguage || req.user.learningLanguage || "Spanish";
+
+    const cap = (str) => {
+      if (!str) return "";
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    };
+    const capNative = cap(native);
+    const capLearning = cap(learning);
+
+    const bios = [
+      `A dedicated language learner and developer based in ${loc}. As a native ${capNative} speaker, I'm currently focused on mastering ${capLearning}. Looking to collaborate on projects, host video chat sessions, and expand my global network!`,
+      `Hi there! 👋 I'm ${name}, currently based in ${loc}. Native in ${capNative} and currently leveling up my ${capLearning} skills. Let's connect to practice languages, share development tips, and chat! 🚀`,
+      `Tech & Language enthusiast | Living in ${loc} | Native ${capNative} & Learning ${capLearning}. Always down for a friendly video call, pair-programming, or a chat. Let's make learning collaborative!`
+    ];
+
+    res.status(200).json({ success: true, bios });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}
+

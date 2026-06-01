@@ -12,7 +12,6 @@ const streamClient = StreamChat.getInstance(apiKey, apiSecret);
 
 export const upsertStramUSer = async function (userData) {
   if (!userData.id) {
-    console.log(userData.id)
     throw new Error("User ID is required");
   }
   try {

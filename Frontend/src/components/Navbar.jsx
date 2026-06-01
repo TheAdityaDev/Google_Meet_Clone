@@ -15,7 +15,6 @@ const Navbar = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
   });
 
-  console.log("Profile Pic URL:", authUserData?.profilePic);
 
   const isChatPage = location.pathname?.startsWith("/chat");
 

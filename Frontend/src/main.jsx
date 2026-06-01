@@ -10,12 +10,16 @@ import {
 } from '@tanstack/react-query'
 
 
+import { SocketProvider } from "./context/SocketContext.jsx";
+
 const queryClient = new QueryClient()
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <SocketProvider>
+        <App />
+      </SocketProvider>
     </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>

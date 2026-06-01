@@ -1,10 +1,11 @@
-import { MessageCircleCodeIcon, UserCircleIcon } from "lucide-react";
+import { MessageSquare, User, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import { getUserFriends } from "../lib/api";
 import { useQuery } from "@tanstack/react-query";
 import NoFriendsFound from "./NoFriendsFound";
 import { Link } from "react-router";
+import { getLanguageFlag } from "./FriendCard";
+import { capitalize } from "../lib/utils";
 
 const FriendCards = () => {
   const [friendsList, setFriendsList] = useState([]);
@@ -16,246 +17,113 @@ const FriendCards = () => {
   } = useQuery({
     queryKey: ["friends"],
     queryFn: getUserFriends,
-    onSuccess: (data) => {
-      console.log("Friends data received:", data); // Debug log
-    },
-    onError: (error) => {
-      console.error("Error fetching friends:", error); // Error logging
-    },
   });
 
-  // Improved friends list handling
   useEffect(() => {
     if (!loadingFriends && friendResponse) {
-      console.log("Processing friend response:", friendResponse); // Debug log
-
       let friends;
       if (Array.isArray(friendResponse)) {
         friends = friendResponse;
       } else if (friendResponse.friends) {
-        // Check for friends propertyf
         friends = friendResponse.friends;
       } else if (friendResponse.data) {
-        // Check for data property
         friends = friendResponse.data;
       } else {
         friends = [];
-        console.warn("Unexpected friends response format:", friendResponse);
       }
-
-      console.log("Processed friends:", friends); // Debug log
       setFriendsList(friends);
     }
   }, [friendResponse, loadingFriends]);
 
-  const StyledWrapper = styled.div`
-    .card {
-      position: relative;
-      background: transparent;
-      width: 300px;
-      height: 300px;
-      border: none;
-    }
-
-    .card:hover {
-      width: 300px;
-    }
-
-    .card .container-image {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #e7e7e7;
-      width: 190px;
-      height: 190px;
-      cursor: pointer;
-      border: none;
-      border-radius: 50%;
-      box-shadow: 0 0 3px 1px #1818183d, 2px 2px 3px #18181865,
-        inset 2px 2px 2px #ffffff;
-      transition: all 0.3s ease-in-out, opacity 0.3s;
-      transition-delay: 0.1s, 0s;
-    }
-
-    .card:hover .container-image {
-      opacity: 0;
-      border-radius: 8px;
-      transition-delay: 0s, 0.6s;
-    }
-
-    .card .container-image .image-circle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 125px;
-      height: auto;
-      object-fit: contain;
-      filter: drop-shadow(2px 2px 2px #1818188a);
-      transition: all 0.3s ease-in-out;
-      transition-delay: 0.4s;
-    }
-
-    .card:hover .container-image .image-circle {
-      opacity: 0;
-      transition-delay: 0s;
-    }
-
-    .card .content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #e7e7e7;
-      padding: 20px;
-      width: 190px;
-      height: 190px;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 0 3px 1px #1818183d, 2px 2px 3px #18181865,
-        inset 2px 2px 2px #ffffff;
-      visibility: hidden;
-      transition: 0.3s ease-in-out;
-      transition-delay: 0s;
-      z-index: 1;
-    }
-
-    .card:hover .content {
-      width: 290px;
-      height: 190px;
-      visibility: visible;
-      transition-delay: 0.5s;
-    }
-
-    .card .content .detail {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: all 0.3s ease-in-out;
-      transition-delay: 0s;
-    }
-
-    .card:hover .content .detail {
-      color: #181818;
-      opacity: 100%;
-      transition: 1s;
-      transition-delay: 0.3s;
-    }
-
-    .card .content .detail span {
-      margin-bottom: 5px;
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .card .content .detail button {
-      margin-top: auto;
-      color: #ffffff;
-      font-size: 13px;
-      border: none;
-      border-radius: 8px;
-      transition: 0.3s ease-in-out;
-    }
-
-    
-
-    .card .content .product-image {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    .card .content .product-image .box-image {
-      display: flex;
-      position: absolute;
-      left: -55%;
-      top:0;
-      width: 100%;
-      height: 75%;
-      opacity: 0;
-      transform: scale(0.5);
-      transition: all 0.5s ease-in-out;
-      transition-delay: 0s;
-    }
-
-    .card:hover .content .product-image .box-image {
-      top: 0;
-      left: 0;
-      opacity: 100%;
-      transform: scale(1);
-      transition-delay: 0.3s;
-    }
-
-    .card .content .product-image .box-image .img-product {
-      margin: auto;
-      width: 7rem;
-      height: auto;
-    }
-
-    .fil-shoes1,
-    .fil-shoes2 {
-      fill: #333333;
-    }
-  `;
   return (
-    <>
+    <div className="container mx-auto px-4 py-6">
       {loadingFriends ? (
-        <div className="flex items-center justify-center">
-          <span className="loading loading-ring loading-lg"></span>
+        <div className="flex items-center justify-center py-16">
+          <span className="loading loading-ring loading-lg text-indigo-500"></span>
         </div>
       ) : friendError ? (
-        <div className="text-red-500 text-center">
-          Error loading friends: {friendError.message}
+        <div className="text-rose-500 text-center py-8 bg-rose-500/10 border border-rose-500/20 rounded-2xl max-w-md mx-auto">
+          <p className="font-semibold text-lg">Error loading friends</p>
+          <p className="text-sm mt-1">{friendError.message}</p>
         </div>
       ) : friendsList.length === 0 ? (
         <NoFriendsFound />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {friendsList.map((friend) => (
-            <div className="px-8 py-6">
-              <StyledWrapper>
-                <div className="card">
-                  <div className="container-image">
-                    <img src={friend.profilePic} alt={friend.fullname} />
-                  </div>
-                  <div className="content">
-                    <div className="detail">
-                      <span>
-                       {friend.fullname}
-                      </span>
-                      <p>{friend.bio}</p>
-                     <div className="mt-auto flex justify-between">
-                       <Link to={`/profile/${friend._id}`} className="btn btn-success ">
-                        <UserCircleIcon className="size-6" />
-                      </Link>
-                       <Link to={`/chat/${friend._id}`} className="btn btn-success">
-                        <MessageCircleCodeIcon className="size-6" />
-                      </Link>
-                     </div>
-                    </div>
-                    <div className="product-image">
-                      <div className="box-image">
-                        <img src={friend.profilePic} alt={friend.fullname} />
-                      </div>
+            <div
+              key={friend._id || friend.id}
+              className="group card bg-slate-900/40 border border-slate-800 hover:border-slate-700/80 hover:shadow-indigo-500/5 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden backdrop-blur-md"
+            >
+              {/* Profile Card Body */}
+              <div className="card-body p-6 space-y-4">
+                {/* Header Row */}
+                <div className="flex items-center gap-4">
+                  <div className="avatar">
+                    <div className="w-16 h-16 rounded-full ring-2 ring-indigo-500/30 overflow-hidden">
+                      <img
+                        src={friend.profilePic || "https://avatar.iran.liara.run/public"}
+                        alt={friend.fullname}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </div>
-                    <div className="text-xl flex text-center">
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-lg text-slate-100 truncate group-hover:text-indigo-400 transition-colors">
                       {friend.fullname}
-                    </div>
+                    </h3>
+                    {friend.location && (
+                      <div className="flex items-center text-xs text-slate-400 mt-1">
+                        <MapPin className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                        <span className="truncate">{friend.location}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </StyledWrapper>
+
+                {/* Languages Details */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span className="badge bg-indigo-500/10 text-indigo-300 border-indigo-500/20 text-xs font-semibold py-2 px-2.5 rounded-full flex items-center gap-1">
+                    {getLanguageFlag(friend.nativeLanguage)}
+                    Native: {capitalize(friend.nativeLanguage)}
+                  </span>
+                  <span className="badge bg-teal-500/10 text-teal-300 border-teal-500/20 text-xs font-semibold py-2 px-2.5 rounded-full flex items-center gap-1">
+                    {getLanguageFlag(friend.learningLanguage)}
+                    Learning: {capitalize(friend.learningLanguage)}
+                  </span>
+                </div>
+
+                {/* Bio */}
+                {friend.bio && (
+                  <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed italic">
+                    "{friend.bio}"
+                  </p>
+                )}
+
+                {/* Actions Panel */}
+                <div className="flex justify-between gap-2.5 pt-3 border-t border-slate-800/80 mt-auto">
+                  <Link
+                    to={`/profile/${friend._id}`}
+                    className="btn btn-outline border-slate-800 hover:bg-slate-800 hover:border-slate-700 text-slate-300 btn-sm flex-1 font-semibold rounded-xl flex items-center gap-1"
+                  >
+                    <User className="size-4" />
+                    Profile
+                  </Link>
+                  <Link
+                    to={`/chat/${friend._id}`}
+                    className="btn btn-primary text-white btn-sm flex-1 font-semibold rounded-xl flex items-center gap-1 shadow-lg"
+                  >
+                    <MessageSquare className="size-4" />
+                    Chat
+                  </Link>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

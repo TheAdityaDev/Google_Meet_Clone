@@ -154,8 +154,58 @@ export const deleteFriend = async (friendId) => {
   return response.data;
 };
 
-export const getStreamToken = async () => {
-  const response = await axiosInstance.get("/chat/token");
+export const getOrCreateDirectChat = async (targetUserId) => {
+  const response = await axiosInstance.post("/chat/direct", { targetUserId });
+  return response.data;
+};
+
+export const getChatMessages = async (chatId) => {
+  const response = await axiosInstance.get(`/chat/${chatId}/messages`);
+  return response.data;
+};
+
+export const sendChatMessage = async (chatId, messageData) => {
+  const response = await axiosInstance.post(`/chat/${chatId}/message`, messageData);
+  return response.data;
+};
+
+export const markChatAsSeen = async (chatId) => {
+  const response = await axiosInstance.put(`/chat/${chatId}/seen`);
+  return response.data;
+};
+
+export const getUserChats = async () => {
+  const response = await axiosInstance.get("/chat");
+  return response.data;
+};
+
+export const createGroupChat = async (groupData) => {
+  const response = await axiosInstance.post("/chat/group", groupData);
+  return response.data;
+};
+
+export const updateGroupDetails = async (chatId, groupData) => {
+  const response = await axiosInstance.put(`/chat/group/${chatId}`, groupData);
+  return response.data;
+};
+
+export const deleteGroupChat = async (chatId) => {
+  const response = await axiosInstance.delete(`/chat/group/${chatId}`);
+  return response.data;
+};
+
+export const addMembersToGroup = async (chatId, newParticipants) => {
+  const response = await axiosInstance.put(`/chat/group/${chatId}/members/add`, { newParticipants });
+  return response.data;
+};
+
+export const removeMemberFromGroup = async (chatId, participantId) => {
+  const response = await axiosInstance.put(`/chat/group/${chatId}/members/remove`, { participantId });
+  return response.data;
+};
+
+export const voteOnPoll = async (messageId, optionId) => {
+  const response = await axiosInstance.put(`/chat/message/${messageId}/vote`, { optionId });
   return response.data;
 };
 
@@ -174,3 +224,30 @@ export const fetchUserProfile = async () => {
     throw error("Something went wrong while fetching profile")
   }
 };
+
+export const editChatMessage = async (messageId, content) => {
+  const response = await axiosInstance.put(`/chat/message/${messageId}`, { content });
+  return response.data;
+};
+
+export const deleteChatMessage = async (messageId) => {
+  const response = await axiosInstance.delete(`/chat/message/${messageId}`);
+  return response.data;
+};
+
+export const joinGroupChat = async (chatId) => {
+  const response = await axiosInstance.put(`/chat/group/${chatId}/join`);
+  return response.data;
+};
+
+export const enhanceUserBio = async (userData) => {
+  const response = await axiosInstance.post("/users/enhance-bio", userData);
+  return response.data;
+};
+
+export const getGroupInviteInfo = async (chatId) => {
+  const response = await axiosInstance.get(`/chat/group/${chatId}/invite-info`);
+  return response.data;
+};
+
+

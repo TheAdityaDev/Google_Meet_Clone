@@ -7,7 +7,6 @@ const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  console.log(currentPath);
   return (
     <aside className="w-64 bg-base-200 border-r border-base-300 hidden lg:flex flex-col h-screen sticky top-0">
       {/* Logo */}
@@ -64,7 +63,7 @@ const Sidebar = () => {
               </div>
             </div>
             <div className="flex-1 pl-3">
-              <p className="font-semibold text-sm">{authUserData?.fullname}</p>
+              <p className="font-semibold text-sm">{authUserData?.fullname.split(" ")[0]}</p>
               <p className="text-xs text-success flex items-center gap-1">
                 <span className="size-2 rounded-full bg-success inline-block" />
                 Online

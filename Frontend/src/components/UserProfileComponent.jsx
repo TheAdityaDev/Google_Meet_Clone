@@ -9,8 +9,6 @@ const UserProfileComponent = ({ user }) => {
     { label: "Learning Language", value: user.learningLanguage },
   ];
 
-  console.log(user)
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow-md p-6">

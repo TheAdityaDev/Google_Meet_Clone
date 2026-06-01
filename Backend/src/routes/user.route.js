@@ -12,6 +12,7 @@ import {
   rejectFriendRequest,
   sendFriendRequest,
   unfriendUser,
+  enhanceBio,
 } from "../controllers/user.controller.js";
 const router = express.Router();
 
@@ -40,6 +41,6 @@ router.get('/friend-profile/:id', getFriendProfiles);
 
 
 router.get("/user-profile", getUserProfile);
-
+router.post("/enhance-bio", enhanceBio);
 
 export default router;
